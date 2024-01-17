@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import './App.css';
 
 interface Forecast {
@@ -17,26 +19,17 @@ function App() {
 
     const contents = forecasts === undefined
         ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tabelLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
+        :
+        <div>
+            <div className="card">
+                <DataTable value={forecasts} responsiveLayout="scroll">
+                    <Column field="date" header="Date"></Column>
+                    <Column field="temperatureC" header="Temp. (C)"></Column>
+                    <Column field="temperatureF" header="Temp. (F)"></Column>
+                    <Column field="summary" header="Summary"></Column>
+                </DataTable>
+            </div>
+        </div>     ;
 
     return (
         <div>
