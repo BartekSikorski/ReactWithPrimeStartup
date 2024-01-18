@@ -1,93 +1,101 @@
-import { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
-import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
+import { ErrorComponent, Refine } from "@refinedev/core";
+import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
+import routerBindings, { DocumentTitleHandler, UnsavedChangesNotifier } from "@refinedev/react-router-v6";
+import dataProvider from "@refinedev/simple-rest";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { ConfirmDialog } from "primereact/confirmdialog";
 
-import 'primereact/resources/themes/lara-light-indigo/theme.css'; //theme
-import 'primereact/resources/primereact.min.css'; //core css
-import 'primeicons/primeicons.css'; //icons
-import 'primeflex/primeflex.css'; // flex
-import './App.css';
+import { Dashboard } from "./pages/dashboard";
+import { ProductList, ProductCreate, ProductEdit, ProductShow } from "./pages/products";
+import { CategoryList, CategoryCreate, CategoryEdit, CategoryShow } from "./pages/categories";
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
-}
+import { Layout } from "./components/layout";
+
+import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/primereact.css";
+import "primeflex/primeflex.css";
+import "primeicons/primeicons.css";
+
+import "./App.css";
 
 function App() {
-    const [count, setCount] = useState(0);
-    const [forecasts, setForecasts] = useState<Forecast[]>();
-
-        useEffect(() => {
-            populateWeatherData();
-        }, []);
-
-        const contents = forecasts === undefined
-            ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-            :
-            <div>
-                <div className="card">
-                    <DataTable value={forecasts} responsiveLayout="scroll">
-                        <Column field="date" header="Date"></Column>
-                        <Column field="temperatureC" header="Temp. (C)"></Column>
-                        <Column field="temperatureF" header="Temp. (F)"></Column>
-                        <Column field="summary" header="Summary"></Column>
-                    </DataTable>
-                </div>
-            </div>   ;
-
-
-
     return (
-        <div className="App">
-            <div>
-                <a href="https://vitejs.dev" target="_blank">
-                    <img src="/vite.svg" className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://reactjs.org" target="_blank">
-                    <img src={reactLogo} className="logo react" alt="React logo" />
-                </a>
-            </div>
-            <h1>Vite + PrimeReact</h1>
-            <div>
-                <h2>PrimeReact Typescript Issue Template</h2>
-                <p>
-                    Please create a test case and attach the link to the to your github
-                    issue report.
-                </p>
-            </div>
-            <div className="card">
-                <Button
-                    icon="pi pi-plus"
-                    className="mr-2"
-                    label="Increment"
-                    onClick={() => setCount((count) => count + 1)}
-                ></Button>
-                <InputText value={count} />
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test PrimeReact
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
-            </p>
-            <div>
-                <h1>Prognoza pogody</h1>
-                {contents}
-            </div>
+        <BrowserRouter>
+            <RefineKbarProvider>
+                <Refine
+                    dataProvider={dataProvider("https://api.finefoods.refine.dev")}
+                    routerProvider={routerBindings}
+                    resources={[
+                        {
+                            name: "dashboard",
+                            list: "/",
+                            meta: {
+                                icon: <i className="pi pi-fw pi-home" />,
+                            },
+                        },
+                        {
+                            name: "products",
+                            list: "/products",
+                            create: "/products/create",
+                            edit: "/products/edit/:id",
+                            show: "/products/show/:id",
+                            meta: {
+                                icon: <i className="pi pi-fw pi-shopping-cart" />,
+                            },
+                        },
+                        {
+                            name: "categories",
+                            list: "/categories",
+                            create: "/categories/create",
+                            edit: "/categories/edit/:id",
+                            show: "/categories/show/:id",
+                            meta: {
+                                icon: <i className="pi pi-fw pi-tags" />,
+                            },
+                        },
+                    ]}
+                    options={{
+                        syncWithLocation: true,
+                        warnWhenUnsavedChanges: true,
+                    }}
+                >
+                    <Routes>
+                        <Route
+                            element={
+                                <Layout>
+                                    <Outlet />
+                                </Layout>
+                            }
+                        >
+                            <Route path="/">
+                                <Route index element={<Dashboard />} />
+                            </Route>
 
-        </div>
+                            <Route path="/products">
+                                <Route index element={<ProductList />} />
+                                <Route path="create" element={<ProductCreate />} />
+                                <Route path="edit/:id" element={<ProductEdit />} />
+                                <Route path="show/:id" element={<ProductShow />} />
+                            </Route>
+
+                            <Route path="/categories">
+                                <Route index element={<CategoryList />} />
+                                <Route path="create" element={<CategoryCreate />} />
+                                <Route path="edit/:id" element={<CategoryEdit />} />
+                                <Route path="show/:id" element={<CategoryShow />} />
+                            </Route>
+
+                            <Route path="*" element={<ErrorComponent />} />
+                        </Route>
+                    </Routes>
+                    <RefineKbar />
+                    <UnsavedChangesNotifier />
+                    <DocumentTitleHandler />
+                    <ConfirmDialog />
+                </Refine>
+            </RefineKbarProvider>
+        </BrowserRouter>
     );
-
-        async function populateWeatherData() {
-            const response = await fetch('weatherforecast');
-            const data = await response.json();
-            setForecasts(data);
-        }
 }
 
 export default App;
