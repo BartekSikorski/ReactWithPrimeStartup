@@ -3,6 +3,8 @@ import { useApiUrl, useCustom } from "@refinedev/core";
 import dayjs from "dayjs";
 
 import { KpiCard } from "../../components/dashboard/kpiCard";
+import { ChartView } from "../../components/dashboard/chartView";
+import { RecentSales } from "../../components/dashboard/recentSales";
 
 import { IChart } from "../../interfaces";
 
@@ -39,6 +41,7 @@ export const Dashboard: React.FC = () => {
     });
 
     return (
+
         <div className="grid">
             <div className="col-12 lg:col-6 xl:col-4">
                 <KpiCard
@@ -68,6 +71,20 @@ export const Dashboard: React.FC = () => {
                     icon="pi-users"
                 />
             </div>
+
+            <div className="col-12">
+                <ChartView
+                    revenue={dailyRevenue?.data.data ?? []}
+                    orders={dailyOrders?.data.data ?? []}
+                    customers={newCustomers?.data.data ?? []}
+                />
+            </div>
+
+            <div className="col-12">
+                <RecentSales />
+            </div>
         </div>
+
+
     );
 };
