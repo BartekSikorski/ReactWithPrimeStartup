@@ -8,6 +8,8 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { Dashboard } from "./pages/dashboard";
 import { ProductList, ProductCreate, ProductEdit, ProductShow } from "./pages/products";
 import { CategoryList, CategoryCreate, CategoryEdit, CategoryShow } from "./pages/categories";
+import { Products } from "./pages/test";
+
 import { Forecast } from "./pages/forecast";
 
 
@@ -65,6 +67,16 @@ function App() {
                                 icon: <i className="pi pi-fw pi-sun" />,
                             },
                         },
+                        {
+                            name: "test",
+                            list: "/test",
+                            //create: "/categories/create",
+                            //edit: "/categories/edit/:id",
+                            //show: "/categories/show/:id",
+                            meta: {
+                                icon: <i className="pi pi-fw pi-sun" />,
+                            },
+                        },
                     ]}
                     options={{
                         syncWithLocation: true,
@@ -99,6 +111,10 @@ function App() {
 
                             <Route path="/forecast">
                                 <Route index element={<Forecast />} />
+                            </Route>
+
+                            <Route path="/test">
+                                <Route index element={<Products />} />
                             </Route>
 
                             <Route path="*" element={<ErrorComponent />} />
